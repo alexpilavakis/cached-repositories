@@ -1,0 +1,19 @@
+{
+    "name": "ulex/cached-repositories",
+    "description": "Cached Repositories - A simple Laravel package",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexandros Pilavakis",
+            "email": "alexpilavakis@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Ulex\\CacheRepositories\\": "src"
+        }
+    },
+    "require": {}
+}
