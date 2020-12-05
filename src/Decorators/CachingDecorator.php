@@ -24,6 +24,19 @@ abstract class CachingDecorator implements CachingDecoratorInterface
     protected $model;
 
     /**
+     * CachingDecorator constructor.
+     * @param CachingDecoratorInterface $repository
+     * @param Cache $cache
+     * @param $model
+     */
+    public function __construct(CachingDecoratorInterface $repository, Cache $cache, $model)
+    {
+        $this->repository = $repository;
+        $this->cache = $cache;
+        $this->model = $model;
+    }
+
+    /**
      * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
      * @return string
      */

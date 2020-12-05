@@ -2,6 +2,7 @@
 
 namespace Ulex\CachedRepositories\Eloquent;
 
+/** Adjust your Model's namespace */
 use App\User;
 use Ulex\CachedRepositories\Interfaces\UserRepositoryInterface;
 
@@ -10,28 +11,11 @@ class UserRepository extends EloquentRepository implements UserRepositoryInterfa
     protected $model;
 
     /**
-     * StoryRepository constructor.
+     * UserRepository constructor.
      * @param User $model
      */
     public function __construct(User $model)
     {
         $this->model = $model;
-    }
-
-    /**
-     * Example Methods
-     */
-    public function isAdmin()
-    {
-        // TODO: Implement isAdmin() method.
-    }
-
-    /**
-     * @param $email
-     * @return mixed
-     */
-    public function getByEmail($email)
-    {
-        return $this->getBy('email', $email);
     }
 }
