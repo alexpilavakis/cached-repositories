@@ -1,12 +1,12 @@
 <?php
 
-namespace Ulex\CachedRepositories\Decorators;
+namespace App\Repositories\Decorators;
 
 /** Adjust your Model's namespace */
 use App\User;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Ulex\CachedRepositories\Interfaces\CachingDecoratorInterface;
-use Ulex\CachedRepositories\Interfaces\UserRepositoryInterface;
 
 class UserCachingDecorator extends CachingDecorator implements UserRepositoryInterface
 {
@@ -18,6 +18,8 @@ class UserCachingDecorator extends CachingDecorator implements UserRepositoryInt
      */
     public function __construct(CachingDecoratorInterface $repository, Cache $cache, User $model)
     {
-        parent::__construct($repository, $cache, $model);
+        $this->repository = $repository;
+        $this->cache = $cache;
+        $this->model = $model;
     }
 }
