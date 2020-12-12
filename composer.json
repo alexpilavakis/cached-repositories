@@ -12,7 +12,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "Ulex\\CacheRepositories\\": "src"
+            "Ulex\\CachedRepositories\\": "src"
         }
     },
     "require": {}

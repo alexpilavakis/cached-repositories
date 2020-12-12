@@ -1,10 +1,11 @@
 <?php
 
-namespace Ulex\CachedRepositories\Eloquent;
+namespace App\Repositories\Eloquent;
 
 /** Adjust your Model's namespace */
 use App\User;
-use Ulex\CachedRepositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use Ulex\CachedRepositories\Eloquent\EloquentRepository;
 
 class UserRepository extends EloquentRepository implements UserRepositoryInterface
 {

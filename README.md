@@ -6,26 +6,31 @@ First, install the package via Composer:
 ```
 composer require ulex/cached-repositories
 ```
+
+------------------------------------------
+<h3>For Laravel</h3>
+
 You should publish the RepositoriesServiceProvider were you can register you Repositories:
 ```php
 php artisan vendor:publish --provider="Ulex\CachedRepositories\RepositoriesServiceProvider"
 ```
+---------------
+
+Copy the User example and adjust it to your application:
+```php
+mkdir -p app/Repositories app/Repositories/Decorators app/Repositories/Eloquent -p app/Repositories/Interfaces
+
+cp vendor/ulex/cached-repositories/src/RepositoriesServiceProvider.php app/Providers/RepositoriesServiceProvider.php
+cp vendor/ulex/cached-repositories/src/Decorators/UserCachingDecorator.php app/Repositories/Decorators/UserCachingDecorator.php
+cp vendor/ulex/cached-repositories/src/Eloquent/UserRepository.php app/Repositories/Eloquent/UserRepository.php
+cp vendor/ulex/cached-repositories/src/Interfaces/UserRepositoryInterface.php app/Repositories/Interfaces/UserRepositoryInterface.php
+```
+
 Then register the package's service provider
 ```php
-$app->register(Ulex\CachedRepositories\RepositoriesServiceProvider::class);
+$app->register(App\Providers\RepositoriesServiceProvider::class);
 ```
 
-And copy the User example and adjust it to your application:
-```php
-mkdir -p Repositories
-mkdir -p Repositories/Decorators
-mkdir -p Repositories/Eloquent
-mkdir -p Repositories/Interfaces
-
-cp vendor/ulex/cached-repositories/src/Decorators/UserCachingDecorator.php Repositories/Decorator/UserCachingDecorator.php
-cp vendor/ulex/cached-repositories/src/UserRepository.php Repositories/Eloquent/UserRepository.php
-cp vendor/ulex/cached-repositories/src/UserRepositoryInterface.php Repositories/Interfaces/UserRepositoryInterface.php
-```
 
 ## What It Does
 This package provides an abstract structure that uses the Repository design pattern with caching decorators for you application.

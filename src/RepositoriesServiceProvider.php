@@ -1,12 +1,12 @@
 <?php
 
-namespace Ulex\CachedRepositories;
+namespace App\Providers;
 
 /** Adjust your Model's namespace */
 use App\User;
 use Illuminate\Support\ServiceProvider;
 use Ulex\CachedRepositories\Decorators\UserCachingDecorator;
-use Ulex\CachedRepositories\Eloquent\UserRepository;
+use App\Repositories\Eloquent\UserRepository;
 use Ulex\CachedRepositories\Interfaces\UserRepositoryInterface;
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -28,10 +28,10 @@ class RepositoriesServiceProvider extends ServiceProvider
     public function register()
     {
         /** Uncomment and Register your Repositories */
-        $this->app->singleton(UserRepositoryInterface::class, function () {
+        /*$this->app->singleton(UserRepositoryInterface::class, function () {
             $user = new User();
             $baseRepo = new UserRepository($user);
             return new UserCachingDecorator($baseRepo, $this->app['cache.store'], $user);
-        });
+        });*/
     }
 }

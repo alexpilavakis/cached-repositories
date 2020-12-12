@@ -2,8 +2,8 @@
 
 namespace Ulex\CachedRepositories\Decorators;
 
-use Illuminate\Contracts\Cache\Repository as Cache;
 use ReflectionClass;
+use Illuminate\Contracts\Cache\Repository as Cache;
 use Ulex\CachedRepositories\Interfaces\CachingDecoratorInterface;
 
 abstract class CachingDecorator implements CachingDecoratorInterface
@@ -22,19 +22,6 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      * @var
      */
     protected $model;
-
-    /**
-     * CachingDecorator constructor.
-     * @param CachingDecoratorInterface $repository
-     * @param Cache $cache
-     * @param $model
-     */
-    public function __construct(CachingDecoratorInterface $repository, Cache $cache, $model)
-    {
-        $this->repository = $repository;
-        $this->cache = $cache;
-        $this->model = $model;
-    }
 
     /**
      * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
