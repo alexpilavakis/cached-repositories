@@ -9,11 +9,22 @@
             "email": "alexpilavakis@hotmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "require": {
+        "php" : "^7.0"
+    },
     "autoload": {
         "psr-4": {
             "Ulex\\CachedRepositories\\": "src"
         }
     },
-    "require": {}
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ulex\\CachedRepositories\\RepositoriesServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    },
+    "minimum-stability": "dev"
 }
