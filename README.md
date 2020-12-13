@@ -8,27 +8,46 @@ composer require ulex/cached-repositories
 ```
 
 ------------------------------------------
+<h2> Service Provider </h2>
 <h3>For Laravel</h3>
 
-You should publish the RepositoriesServiceProvider were you can register you Repositories:
+You should publish the RepositoriesServiceProvider:
 ```php
 php artisan vendor:publish --provider="Ulex\CachedRepositories\RepositoriesServiceProvider"
 ```
----------------
 
-Copy the User example and adjust it to your application:
+Optional: The service provider will automatically get registered. Or you may manually add the service provider in your config/app.php file:
+Laravel
 ```php
-mkdir -p app/Repositories app/Repositories/Decorators app/Repositories/Eloquent -p app/Repositories/Interfaces
-
-cp vendor/ulex/cached-repositories/src/RepositoriesServiceProvider.php app/Providers/RepositoriesServiceProvider.php
-cp vendor/ulex/cached-repositories/src/Decorators/UserCachingDecorator.php app/Repositories/Decorators/UserCachingDecorator.php
-cp vendor/ulex/cached-repositories/src/Eloquent/UserRepository.php app/Repositories/Eloquent/UserRepository.php
-cp vendor/ulex/cached-repositories/src/Interfaces/UserRepositoryInterface.php app/Repositories/Interfaces/UserRepositoryInterface.php
+'providers' => [
+// ...
+Ulex\CachedRepositories\RepositoriesServiceProvider::class,
+];
 ```
-
-Then register the package's service provider
+<h3>For Lumen</h3>
+In your `bootstrap/app.php`
 ```php
 $app->register(App\Providers\RepositoriesServiceProvider::class);
+```
+
+---------------
+
+<h2> Config </h2>
+
+If config file `cached-repositories.php` was not publish copy it to config folder with:
+```
+cp vendor/ulex/cached-repositories/config/cached-repositories.php config/cached-repositories.php
+```
+
+<h2> Example </h2>
+
+<b>!! Create Repositories folder IF not already present</b>:
+```php
+mkdir -p app/Repositories
+```
+Copy the User example and adjust it to your application:
+```php
+cp -r vendor/ulex/cached-repositories/example/* app/Repositories/
 ```
 
 
