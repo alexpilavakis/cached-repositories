@@ -1,6 +1,6 @@
 <?php
 
-namespace Ulex\CachedRepositories\Interfaces;
+namespace App\Repositories\Interfaces;
 
 interface UserRepositoryInterface
 {

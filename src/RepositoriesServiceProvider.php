@@ -1,13 +1,8 @@
 <?php
 
-namespace App\Providers;
+namespace Ulex\CachedRepositories;
 
-/** Adjust your Model's namespace */
-use App\User;
 use Illuminate\Support\ServiceProvider;
-use Ulex\CachedRepositories\Decorators\UserCachingDecorator;
-use App\Repositories\Eloquent\UserRepository;
-use Ulex\CachedRepositories\Interfaces\UserRepositoryInterface;
 
 class RepositoriesServiceProvider extends ServiceProvider
 {
@@ -17,7 +12,9 @@ class RepositoriesServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot() {
-        $this->loadRoutesFrom(__DIR__.'/routes/web.php');
+        if (function_exists('config_path')) { // function not available and 'publish' not relevant in Lumen
+            $this->publishes([__DIR__ . '/../config/cached-repositories.php' => config_path('cached-repositories.php')], 'config');
+        }
     }
 
     /**
@@ -27,11 +24,17 @@ class RepositoriesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        /** Uncomment and Register your Repositories */
-        /*$this->app->singleton(UserRepositoryInterface::class, function () {
-            $user = new User();
-            $baseRepo = new UserRepository($user);
-            return new UserCachingDecorator($baseRepo, $this->app['cache.store'], $user);
-        });*/
+        $models = $this->app->config['cached-repositories.models'];
+        $namespaces = $this->app->config['cached-repositories.namespaces'];
+        foreach ($models as $name => $class) {
+            $interface = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
+            $decorator = $namespaces['decorators'] . "\\" . $name . "CachingDecorator";
+            $repository = $namespaces['eloquent'] . "\\" . $name . "Repository";
+            $this->app->singleton($interface, function () use ($name, $class, $decorator, $repository) {
+                $model = new $class();
+                $baseRepo = new $repository($model);
+                return new $decorator($baseRepo, $this->app['cache.store'], $model);
+            });
+        }
     }
 }

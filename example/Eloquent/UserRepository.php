@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Eloquent;
 
-/** Adjust your Model's namespace */
 use App\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Ulex\CachedRepositories\Eloquent\EloquentRepository;
