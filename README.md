@@ -25,7 +25,7 @@ Ulex\CachedRepositories\RepositoriesServiceProvider::class,
 ];
 ```
 <h3>For Lumen</h3>
-In your `bootstrap/app.php`
+In your `bootstrap/app.php` add this:
 ```php
 $app->register(App\Providers\RepositoriesServiceProvider::class);
 ```
