@@ -25,8 +25,9 @@ Ulex\CachedRepositories\RepositoriesServiceProvider::class,
 ];
 ```
 <h3>For Lumen</h3>
+
 In your `bootstrap/app.php` add this:
-```php
+```
 $app->register(App\Providers\RepositoriesServiceProvider::class);
 ```
 
@@ -34,7 +35,7 @@ $app->register(App\Providers\RepositoriesServiceProvider::class);
 
 <h2> Config </h2>
 
-If config file `cached-repositories.php` was not publish copy it to config folder with:
+If config file `cached-repositories.php` was not published copy it to config folder with:
 ```
 cp vendor/ulex/cached-repositories/config/cached-repositories.php config/cached-repositories.php
 ```
