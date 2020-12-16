@@ -2,9 +2,10 @@
 
 namespace Ulex\CachedRepositories;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
-class RepositoriesServiceProvider extends ServiceProvider
+class RepositoriesServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * Bootstrap any application services.
@@ -36,5 +37,21 @@ class RepositoriesServiceProvider extends ServiceProvider
                 return new $decorator($baseRepo, $this->app['cache.store'], $model);
             });
         }
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides(): array
+    {
+        $provides = [];
+        $models = $this->app->config['cached-repositories.models'];
+        $namespaces = $this->app->config['cached-repositories.namespaces'];
+        foreach ($models as $name => $class) {
+            $provides[] = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
+        }
+        return $provides;
     }
 }

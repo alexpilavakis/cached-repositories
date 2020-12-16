@@ -28,7 +28,7 @@ Ulex\CachedRepositories\RepositoriesServiceProvider::class,
 
 In your `bootstrap/app.php` add this:
 ```
-$app->register(App\Providers\RepositoriesServiceProvider::class);
+$app->register(Ulex\CachedRepositories\RepositoriesServiceProvider::class);
 ```
 
 ---------------
