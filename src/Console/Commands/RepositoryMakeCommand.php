@@ -73,7 +73,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     private function setRepositoryClass()
     {
-        $name = ucwords(strtolower(trim($this->argument('name'))));
+        $name = (trim($this->argument('name')));
 
         $this->model = $name;
 
