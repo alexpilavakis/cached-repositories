@@ -1,0 +1,21 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Models\DummyModel;
+use Ulex\CachedRepositories\Eloquent\EloquentRepository;
+use App\Repositories\Interfaces\DummyClassInterface;
+
+class DummyClass extends EloquentRepository implements DummyClassInterface
+{
+    protected $model;
+
+    /**
+     * DummyRepository constructor.
+     * @param DummyModel $model
+     */
+    public function __construct(DummyModel $model)
+    {
+        $this->model = $model;
+    }
+}

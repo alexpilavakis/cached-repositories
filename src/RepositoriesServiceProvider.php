@@ -4,6 +4,9 @@ namespace Ulex\CachedRepositories;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
+use Ulex\CachedRepositories\Console\Commands\CachingDecoratorMakeCommand;
+use Ulex\CachedRepositories\Console\Commands\InterfaceMakeCommand;
+use Ulex\CachedRepositories\Console\Commands\RepositoryMakeCommand;
 
 class RepositoriesServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -15,6 +18,13 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
     public function boot() {
         if (function_exists('config_path')) { // function not available and 'publish' not relevant in Lumen
             $this->publishes([__DIR__ . '/../config/cached-repositories.php' => config_path('cached-repositories.php')], 'config');
+        }
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                RepositoryMakeCommand::class,
+                InterfaceMakeCommand::class,
+                CachingDecoratorMakeCommand::class,
+            ]);
         }
     }
 
