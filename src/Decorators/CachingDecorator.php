@@ -27,9 +27,17 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
      * @return string
      */
-    private function tag(): string
+    protected function tag(): string
     {
         return (new ReflectionClass($this->model))->getShortName();
+    }
+
+    /**
+     * @return int
+     */
+    protected function ttl(): int
+    {
+        return app()->config['cached-repositories.ttl'];
     }
 
     /**
@@ -37,7 +45,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function getAll()
     {
-        return $this->cache->tags($this->tag())->remember('all', 60, function () {
+        return $this->cache->tags($this->tag())->remember('all', $this->ttl(), function () {
             return $this->repository->getAll();
         });
     }
@@ -48,7 +56,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function getById($id)
     {
-        return $this->cache->tags($this->tag())->remember($id, 60, function () use ($id) {
+        return $this->cache->tags($this->tag())->remember($id, $this->ttl(), function () use ($id) {
             return $this->repository->getById($id);
         });
     }
@@ -60,7 +68,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function getBy($attribute, $value)
     {
-        return $this->cache->tags($this->tag())->remember($attribute . ':' . $value, 60,
+        return $this->cache->tags($this->tag())->remember($attribute . ':' . $value, $this->ttl(),
             function () use ($attribute, $value) {
                 return $this->repository->getBy($attribute, $value);
             });
@@ -72,7 +80,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function findOrFail($id)
     {
-        return $this->cache->tags($this->tag())->remember($id, 60, function () use ($id) {
+        return $this->cache->tags($this->tag())->remember($id, $this->ttl(), function () use ($id) {
             return $this->repository->findOrFail($id);
         });
     }

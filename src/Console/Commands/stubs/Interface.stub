@@ -1,0 +1,10 @@
+<?php
+
+namespace DummyNamespace;
+
+use Ulex\CachedRepositories\Interfaces\CachingDecoratorInterface;
+
+interface DummyClass extends CachingDecoratorInterface
+{
+
+}
