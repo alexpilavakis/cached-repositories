@@ -13,7 +13,7 @@ composer require ulex/cached-repositories
 
 You should publish the RepositoriesServiceProvider:
 ```php
-php artisan vendor:publish --provider="Ulex\CachedRepositories\RepositoriesServiceProvider"
+php artisan vendor:publish --provider="Ulex\CachedRepositories\RepositoriesServiceProvider" --tag=config
 ```
 
 Optional: The service provider will automatically get registered. Or you may manually add the service provider in your config/app.php file:
@@ -40,16 +40,35 @@ If config file `cached-repositories.php` was not published copy it to config fol
 cp vendor/ulex/cached-repositories/config/cached-repositories.php config/cached-repositories.php
 ```
 
-<h2> Example </h2>
+<h2> Create Repository, Interface, Decorator for a Model </h2>
 
-<b>!! Create Repositories folder IF not already present</b>:
+Run the following php artisan command where the argument is your Model name (example Post):
 ```php
-mkdir -p app/Repositories
+php artisan make:repository Post --all
 ```
-Copy the User example and adjust it to your application:
+Expected Result:
 ```php
-cp -r vendor/ulex/cached-repositories/example/* app/Repositories/
+Repository created successfully.
+Interface created successfully.
+Decorator created successfully.
+Add Model in `models` array in config/cached-repositories.php
 ```
+The following folders will be created in your `app/Repositories` folder (if they don't exist):
+```php
+Decorators
+Eloquent
+Interfaces
+```
+As seen in the result remember to add the Model in `config/cached-repositories.php` :
+```php
+...
+'models' => [
+        'User' => App\Models\User::class,
+        'Post' => App\Models\Post::class,
+]
+...
+```
+
 
 
 ## What It Does
