@@ -64,7 +64,7 @@ class CachingDecoratorMakeCommand extends GeneratorCommand
      */
     private function setDecoratorClass()
     {
-        $name = ucwords(strtolower(trim($this->argument('name'))));
+        $name = (trim($this->argument('name')));
 
         $this->model = $name;
 

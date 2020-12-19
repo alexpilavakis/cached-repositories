@@ -56,7 +56,7 @@ class InterfaceMakeCommand extends GeneratorCommand
      */
     private function setInterfaceClass()
     {
-        $name = ucwords(strtolower(trim($this->argument('name'))));
+        $name = (trim($this->argument('name')));
 
         $this->model = $name;
 
