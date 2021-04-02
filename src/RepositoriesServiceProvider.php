@@ -41,7 +41,7 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
             $interface = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
             $decorator = $namespaces['decorators'] . "\\" . $name . "CachingDecorator";
             $repository = $namespaces['eloquent'] . "\\" . $name . "Repository";
-            $this->app->singleton($interface, function () use ($name, $class, $decorator, $repository) {
+            $this->app->singleton($interface, function () use ($class, $decorator, $repository) {
                 $model = new $class();
                 $baseRepo = new $repository($model);
                 return new $decorator($baseRepo, $this->app['cache.store'], $model);
