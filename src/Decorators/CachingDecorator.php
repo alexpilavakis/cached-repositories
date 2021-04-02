@@ -23,6 +23,9 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     protected $model;
 
+    /** @var bool */
+    protected $cacheForever = false;
+
     /**
      * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
      * @return string
@@ -37,7 +40,119 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     protected function ttl(): int
     {
-        return app()->config['cached-repositories.ttl'];
+        return app()->config['cached-repositories.ttl.default'];
+    }
+
+    /**
+     * @param $function
+     * @param null $arguments
+     * @return string
+     */
+    protected function key($function, $arguments = null)
+    {
+        if (empty($arguments)) {
+            return $function;
+        }
+        return sprintf('%s:%s', $function, implode(':', $arguments));
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    protected function has(string $key)
+    {
+        return $this->cache->tags($this->tag())->has($key);
+    }
+
+    /**
+     * @return bool
+     */
+    public function flushTag()
+    {
+        return $this->cache->tags($this->tag())->flush();
+    }
+
+
+    /**
+     * Flush all 'get' keys for this model instance
+     *
+     * @param $model
+     * @param array|null $attributes
+     */
+    public function flushGetKeys($model, $attributes = null)
+    {
+        $this->forget("getAll");
+        $this->forget("getById:{$model->id}");
+        $attributes = $attributes ?? $model->getAttributes();
+        $this->forgetAttributes($attributes);
+    }
+
+    /**
+     * @param $key
+     * @return bool
+     */
+    public function forget($key)
+    {
+        return $this->cache->tags($this->tag())->forget($key);
+    }
+
+    /**
+     * @param array $attributes
+     */
+    public function forgetAttributes(array $attributes)
+    {
+        if (empty($attributes)) {
+            return;
+        }
+        /** when timestamps() is used */
+        unset($attributes['created_at']);
+        unset($attributes['updated_at']);
+        /** when softDeletes() is used */
+        unset($attributes['deleted_at']);
+
+        foreach ($attributes as $attribute => $value) {
+            $key = $this->key('getBy', [$attribute, $value]);
+            if ($this->has($key)) {
+                $this->forget($key);
+            }
+        }
+    }
+
+    /**
+     * @return CachingDecoratorInterface
+     */
+    protected function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @param string $function
+     * @param $arguments
+     * @return array|mixed
+     */
+    protected function remember(string $function, $arguments)
+    {
+        $key = $this->key($function, $arguments);
+        $closure = $this->closure($function, $arguments);
+        if ($this->cacheForever) {
+            return $this->cache->tags($this->tag())->rememberForever($key, $closure);
+        }
+        return $this->cache->tags($this->tag())->remember($key, $this->ttl(), $closure);
+    }
+
+    /**
+     * @param $function
+     * @param $arguments
+     * @return Closure
+     */
+    private function closure($function, $arguments)
+    {
+        $repository = $this->getRepository();
+        return function () use ($function, $arguments, $repository) {
+            return $repository->$function(...$arguments);
+        };
     }
 
     /**
@@ -45,9 +160,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function getAll()
     {
-        return $this->cache->tags($this->tag())->remember('all', $this->ttl(), function () {
-            return $this->repository->getAll();
-        });
+        return $this->remember(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -56,9 +169,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function getById($id)
     {
-        return $this->cache->tags($this->tag())->remember($id, $this->ttl(), function () use ($id) {
-            return $this->repository->getById($id);
-        });
+        return $this->remember(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -68,10 +179,16 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function getBy($attribute, $value)
     {
-        return $this->cache->tags($this->tag())->remember($attribute . ':' . $value, $this->ttl(),
-            function () use ($attribute, $value) {
-                return $this->repository->getBy($attribute, $value);
-            });
+        return $this->remember(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * @param array $conditions
+     * @return array|mixed
+     */
+    public function getByConditions(array $conditions)
+    {
+        return $this->remember(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -80,9 +197,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function findOrFail($id)
     {
-        return $this->cache->tags($this->tag())->remember($id, $this->ttl(), function () use ($id) {
-            return $this->repository->findOrFail($id);
-        });
+        return $this->remember(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -91,8 +206,17 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function create($attributes)
     {
-        $this->cache->tags($this->tag())->flush();
-        return $this->repository->create($attributes);
+        $this->forget("getAll");
+        return $this->getRepository()->create($attributes);
+    }
+
+    /**
+     * @param array $attributes
+     */
+    public function createMany(array $attributes)
+    {
+        $this->forget("getAll");
+        $this->repository->createMany($attributes);
     }
 
     /**
@@ -101,7 +225,8 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function firstOrCreate($attributes)
     {
-        return $this->repository->firstOrCreate($attributes);
+        /** TODO Flush cache in case of first */
+        return $this->getRepository()->firstOrCreate($attributes);
     }
 
     /**
@@ -110,7 +235,8 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function updateOrCreate($attributes)
     {
-        return $this->repository->updateOrCreate($attributes);
+        /** TODO Flush cache in case of update */
+        return $this->getRepository()->updateOrCreate($attributes);
     }
 
     /**
@@ -120,7 +246,25 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function update($model, $attributes)
     {
-        return $this->repository->update($model, $attributes);
+        $this->flushGetKeys($model);
+        return $this->getRepository()->update($model, $attributes);
+    }
+
+    /**
+     * @param array $conditions
+     * @param array $attributes
+     * @return bool
+     */
+    public function updateWithConditions(array $conditions, array $attributes)
+    {
+        $result = $this->repository->updateWithConditions($conditions, $attributes);
+        if ($result) {
+            $models = $this->getByConditions($conditions);
+            foreach ($models as $model) {
+                $this->flushGetKeys($model, $attributes);
+            }
+        }
+        return $result;
     }
 
     /**
@@ -129,7 +273,17 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function delete($model)
     {
-        return $this->repository->delete($model);
+        $this->forget("getAll");
+        return $this->getRepository()->delete($model);
     }
 
+    /**
+     * @param string $column
+     * @param array $attributes
+     */
+    public function deleteManyBy(string $column, array $attributes)
+    {
+        $this->forget("getAll");
+        $this->model->query()->whereIn($column, $attributes)->delete();
+    }
 }
