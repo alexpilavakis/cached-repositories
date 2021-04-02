@@ -35,6 +35,12 @@ interface CachingDecoratorInterface
     public function create($attributes);
 
     /**
+     * @param array $attributes
+     * @return mixed
+     */
+    public function createMany(array $attributes);
+
+    /**
      * @param $attributes
      * @return mixed
      */
@@ -54,10 +60,22 @@ interface CachingDecoratorInterface
     public function update($model, $attributes);
 
     /**
+     * @param array $conditions
+     * @param array $attributes
+     * @return bool|int
+     */
+    public function updateWithConditions(array $conditions, array $attributes);
+
+    /**
      * @param $model
      * @return mixed
      */
     public function delete($model);
 
-
+    /**
+     * @param string $column
+     * @param array $attributes
+     * @return mixed
+     */
+    public function deleteManyBy(string $column, array $attributes);
 }
