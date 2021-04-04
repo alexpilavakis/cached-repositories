@@ -42,6 +42,15 @@ abstract class EloquentRepository implements CachingDecoratorInterface
     }
 
     /**
+     * @param array $conditions
+     * @return mixed
+     */
+    public function getByConditions(array $conditions)
+    {
+        return $this->model->where($conditions)->first();
+    }
+
+    /**
      * @param $id
      * @return mixed
      */

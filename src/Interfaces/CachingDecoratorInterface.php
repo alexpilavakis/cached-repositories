@@ -23,6 +23,12 @@ interface CachingDecoratorInterface
     public function getBy($attribute, $value);
 
     /**
+     * @param array $conditions
+     * @return mixed
+     */
+    public function getByConditions(array $conditions);
+
+    /**
      * @param $id
      * @return mixed
      */

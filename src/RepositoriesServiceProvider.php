@@ -37,14 +37,20 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
     {
         $models = $this->app->config['cached-repositories.models'];
         $namespaces = $this->app->config['cached-repositories.namespaces'];
+        try{
+            $cache = $this->app['cache.store'];
+            $alive = $cache->connection();
+        }catch(\Throwable $exception){
+            $alive = false;
+        }
         foreach ($models as $name => $class) {
             $interface = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
             $decorator = $namespaces['decorators'] . "\\" . $name . "CachingDecorator";
             $repository = $namespaces['eloquent'] . "\\" . $name . "Repository";
-            $this->app->singleton($interface, function () use ($class, $decorator, $repository) {
+            $this->app->singleton($interface, function () use ($class, $decorator, $repository, $alive, $cache) {
                 $model = new $class();
                 $baseRepo = new $repository($model);
-                return new $decorator($baseRepo, $this->app['cache.store'], $model);
+                return $alive ? new $decorator($baseRepo, $cache, $model) : $baseRepo;
             });
         }
     }
