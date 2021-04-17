@@ -5,34 +5,34 @@ namespace Ulex\CachedRepositories\Interfaces;
 interface CachingDecoratorInterface
 {
     /**
-     * @return mixed
-     */
-    public function getAll();
-
-    /**
      * @param $id
      * @return mixed
      */
-    public function getById($id);
-
-    /**
-     * @param $attribute
-     * @param $value
-     * @return mixed
-     */
-    public function getBy($attribute, $value);
-
-    /**
-     * @param array $conditions
-     * @return mixed
-     */
-    public function getByConditions(array $conditions);
+    public function find($id);
 
     /**
      * @param $id
      * @return mixed
      */
     public function findOrFail($id);
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function findBy($attribute, $value);
+
+    /**
+     * @return mixed
+     */
+    public function getAll();
+
+    /**
+     * @param array $conditions
+     * @return mixed
+     */
+    public function getByConditions(array $conditions);
 
     /**
      * @param $attributes
@@ -70,7 +70,7 @@ interface CachingDecoratorInterface
      * @param array $attributes
      * @return bool|int
      */
-    public function updateWithConditions(array $conditions, array $attributes);
+    public function updateByConditions(array $conditions, array $attributes);
 
     /**
      * @param $model
@@ -79,9 +79,8 @@ interface CachingDecoratorInterface
     public function delete($model);
 
     /**
-     * @param string $column
-     * @param array $attributes
-     * @return mixed
+     * @param array $conditions
+     * @return void
      */
-    public function deleteManyBy(string $column, array $attributes);
+    public function deleteByConditions(array $conditions);
 }
