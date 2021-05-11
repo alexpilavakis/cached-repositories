@@ -44,6 +44,16 @@ abstract class EloquentRepository implements CachingDecoratorInterface
         return $this->model->where($attribute, '=', $value)->first();
     }
 
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function checkIfExists($attribute, $value)
+    {
+        return $this->model->where($attribute, '=', $value)->exists();
+    }
+
     /** ################################################ Get Collection ################################################ */
 
     /**

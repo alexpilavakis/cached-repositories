@@ -87,6 +87,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
 
         foreach ($attributes as $attribute => $value) {
             $this->flushFunction('findBy', [$attribute, $value]);
+            $this->flushFunction('checkIfExists', [$attribute, $value]);
         }
     }
 
@@ -213,6 +214,16 @@ abstract class CachingDecorator implements CachingDecoratorInterface
     public function findBy($attribute, $value)
     {
         return $this->model->where($attribute, '=', $value)->first();
+    }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function checkIfExists($attribute, $value)
+    {
+        return $this->remember(__FUNCTION__, func_get_args());
     }
 
     /** ################################################ Get Collection ################################################ */

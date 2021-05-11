@@ -29,6 +29,13 @@ interface CachingDecoratorInterface
     public function getAll();
 
     /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function checkIfExists($attribute, $value);
+
+    /**
      * @param array $conditions
      * @return mixed
      */
