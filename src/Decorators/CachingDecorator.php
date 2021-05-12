@@ -213,7 +213,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function findBy($attribute, $value)
     {
-        return $this->model->where($attribute, '=', $value)->first();
+        return $this->remember(__FUNCTION__, func_get_args());
     }
 
     /**
