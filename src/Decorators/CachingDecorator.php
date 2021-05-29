@@ -28,7 +28,8 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     protected function ttl(): int
     {
-        return app()->config['cached-repositories.ttl.default'];
+        $ttl = app()->config['cached-repositories.ttl'];
+        return $ttl[strtolower(class_basename($this->model))] ?? $ttl['default'];
     }
 
     /**
@@ -58,7 +59,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      * @param $model
      * @param array|null $attributes
      */
-    public function flushGetKeys($model, $attributes = null)
+    public function flushGetKeys($model, array $attributes = null)
     {
         if (isset($model->id)) {
             $this->forget("find:{$model->id}");
@@ -154,7 +155,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      * @param array|null $tags
      * @return array|mixed
      */
-    protected function remember(string $function, $arguments, $tags = null)
+    protected function remember(string $function, $arguments, array $tags = null)
     {
         $key = $this->key($function, $arguments);
         $closure = $this->closure($function, $arguments);
