@@ -70,7 +70,7 @@ abstract class EloquentRepository implements CachingDecoratorInterface
      */
     public function getByConditions(array $conditions)
     {
-        return $this->model->where($conditions)->first();
+        return $this->model->where($conditions)->get();
     }
 
     /** ################################################ Modify ################################################ */
