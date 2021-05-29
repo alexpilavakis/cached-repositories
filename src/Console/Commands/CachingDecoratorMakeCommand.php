@@ -60,17 +60,15 @@ class CachingDecoratorMakeCommand extends GeneratorCommand
     /**
      * Set repository class name
      *
-     * @return  CachingDecoratorMakeCommand
+     * @return  void
      */
-    private function setDecoratorClass()
+    private function setDecoratorClass(): void
     {
         $name = (trim($this->argument('name')));
 
         $this->model = $name;
 
         $this->decoratorClass = $name . 'CachingDecorator';
-
-        return $this;
     }
 
     /**

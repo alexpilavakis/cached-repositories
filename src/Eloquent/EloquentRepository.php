@@ -3,9 +3,9 @@
 namespace Ulex\CachedRepositories\Eloquent;
 
 use Ulex\CachedRepositories\Interfaces\CachingDecoratorInterface;
-
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Closure;
 
 abstract class EloquentRepository implements CachingDecoratorInterface
 {
@@ -14,21 +14,24 @@ abstract class EloquentRepository implements CachingDecoratorInterface
      */
     protected $model;
 
+    /** ################################################ Single ################################################ */
+
     /**
+     * @param $id
      * @return mixed
      */
-    public function getAll()
+    public function find($id)
     {
-        return $this->model->all();
+        return $this->model->find($id);
     }
 
     /**
      * @param $id
      * @return mixed
      */
-    public function getById($id)
+    public function findOrFail($id)
     {
-        return $this->model->find($id);
+        return $this->model->findOrFail($id);
     }
 
     /**
@@ -36,9 +39,29 @@ abstract class EloquentRepository implements CachingDecoratorInterface
      * @param $value
      * @return mixed
      */
-    public function getBy($attribute, $value)
+    public function findBy($attribute, $value)
     {
         return $this->model->where($attribute, '=', $value)->first();
+    }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function checkIfExists($attribute, $value)
+    {
+        return $this->model->where($attribute, '=', $value)->exists();
+    }
+
+    /** ################################################ Get Collection ################################################ */
+
+    /**
+     * @return mixed
+     */
+    public function getAll()
+    {
+        return $this->model->all();
     }
 
     /**
@@ -50,14 +73,7 @@ abstract class EloquentRepository implements CachingDecoratorInterface
         return $this->model->where($conditions)->first();
     }
 
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function findOrFail($id)
-    {
-        return $this->model->findOrFail($id);
-    }
+    /** ################################################ Modify ################################################ */
 
     /**
      * @param $attributes
@@ -127,7 +143,7 @@ abstract class EloquentRepository implements CachingDecoratorInterface
      * @param array $attributes
      * @return bool|int
      */
-    public function updateWithConditions(array $conditions, array $attributes)
+    public function updateByConditions(array $conditions, array $attributes)
     {
         return $this->model->where($conditions)->update($attributes);
     }
@@ -141,22 +157,13 @@ abstract class EloquentRepository implements CachingDecoratorInterface
     }
 
     /**
-     * Example:
-     * $attributes = [
-     *      'value_1'
-     *      'value_2'
-     *      ...
-     *  ];
-     * @param string $column
-     * @param array $emails
+     * @param array $conditions
      */
-    public function deleteManyBy(string $column, array $emails)
+    public function deleteByConditions(array $conditions)
     {
-        $this->model->query()->whereIn($column, $emails)->delete();
     }
 
     /**
-     * @param $attribute
      * @param $date
      *
      * @return Closure

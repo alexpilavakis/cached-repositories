@@ -3,6 +3,7 @@
 namespace Ulex\CachedRepositories;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 use Ulex\CachedRepositories\Console\Commands\CachingDecoratorMakeCommand;
 use Ulex\CachedRepositories\Console\Commands\InterfaceMakeCommand;
@@ -41,6 +42,7 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
             $cache = $this->app['cache.store'];
             $alive = $cache->connection();
         }catch(\Throwable $exception){
+            $cache = new Cache();
             $alive = false;
         }
         foreach ($models as $name => $class) {
