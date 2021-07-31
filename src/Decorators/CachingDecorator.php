@@ -264,8 +264,8 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function createMany(array $attributes)
     {
-        $this->flushCollections();
         $this->repository->createMany($attributes);
+        $this->flushCollections();
     }
 
     /**
@@ -297,8 +297,12 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function update($model, $attributes)
     {
-        $this->flushGetKeys($model);
-        return $this->getRepository()->update($model, $attributes);
+        $repository = $this->getRepository();
+        $result = $repository->update($model, $attributes);
+        if ($result) {
+            $this->flushGetKeys($model);
+        }
+        return $result;
     }
 
     /**
@@ -308,7 +312,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function updateByConditions(array $conditions, array $attributes)
     {
-        $result = $this->repository->updateByConditions($conditions, $attributes);
+        $result = $this->getRepository()->updateByConditions($conditions, $attributes);
         if ($result) {
             $models = $this->getByConditions($conditions);
             foreach ($models as $model) {
@@ -324,8 +328,11 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     public function delete($model)
     {
-        $this->flushGetKeys($model);
-        return $this->getRepository()->delete($model);
+        $result = $this->getRepository()->delete($model);
+        if ($result) {
+            $this->flushGetKeys($model);
+        }
+        return $result;
     }
 
     /**
