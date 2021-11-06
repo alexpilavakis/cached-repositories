@@ -14,6 +14,14 @@ abstract class EloquentRepository implements CachingDecoratorInterface
      */
     protected $model;
 
+    /**
+     * @return $this
+     */
+    public function fromDb()
+    {
+        return $this;
+    }
+
     /** ################################################ Single ################################################ */
 
     /**
