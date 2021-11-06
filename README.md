@@ -76,17 +76,15 @@ As seen in the result remember to add the Model in `config/cached-repositories.p
 
 
 
-## What It Does
+## How to use
 This package provides an abstract structure that uses the Repository design pattern with caching decorators for you application.
 
 Once installed you can create Repositories for your models that cache the data from your queries.
 EloquentRepository is provided and ready to use. Follow the same principle for any data resource you have on your application.
 
 ```php
-// Example when injecting to a controller 
-/*
-* @param UserRepositoryInterface $siteRepository
-*/
+# Example when injecting to a controller 
+
 public function __construct(UserRepositoryInterface $userRepository)
 {
     $this->userRepository = $userRepository;
@@ -94,10 +92,42 @@ public function __construct(UserRepositoryInterface $userRepository)
 
 ...
 
-/** @var User $user */
-$user = $this->userRepository->getBy('name', $userName);
+public function get($name)
+{
+    //retrieve from db and then cache the result
+    $user = $this->userRepository->getBy('name', $userName);
+    //retrieve straight from db, don't cache
+    $user = $this->userRepository->fromDb()->getBy('name', $userName);
+} 
 ```
-
+## Extending a model's CachingDecorator
+For GET functions use `remember` function the same way as in the abstract CachingDecorator. This will ensure that this function is cached properly. 
+#### UserCachingDecorator.php
+```php
+public function getUserInfo($user_id)
+{
+    return $this->remember(__FUNCTION__, func_get_args());
+}
+```
+<b>Note:</b> Remember to add the cache invalidation of the new function by extending flushGetKeys in the model's CachingDecorator.  
+```php
+public function flushGetKeys($model, $attributes = null)
+{
+    $user_id = $model->user_id;
+    $key = $this->key('getUserInfo', compact('user_id'));
+    parent::flushGetKeys($model, $attributes);
+}
+```
+#### UserRepository.php
+Add the query in the model's repository 
+```php
+public function getUserInfo($user_id)
+{
+    return $this->model->query()
+        ->where('user_id', '=', $user_id)
+        ->whereNotNull('something')->get();
+}
+```
 ## Contributing
 
 This package is mostly based on [Jeffrey Way](https://twitter.com/jeffrey_way)'s awesome [Laracasts](https://laracasts.com) lessons
