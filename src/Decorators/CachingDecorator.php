@@ -21,7 +21,19 @@ abstract class CachingDecorator implements CachingDecoratorInterface
     /** @var bool */
     protected $cacheForever = false;
 
+    /** @var bool */
+    protected $fromDb = false;
+
     const CACHE_TAG_COLLECTION = 'collection';
+
+    /**
+     * @return $this
+     */
+    public function fromDb()
+    {
+        $this->fromDb = true;
+        return $this;
+    }
 
     /**
      * @return int
@@ -157,8 +169,12 @@ abstract class CachingDecorator implements CachingDecoratorInterface
      */
     protected function remember(string $function, $arguments, array $tags = null)
     {
-        $key = $this->key($function, $arguments);
         $closure = $this->closure($function, $arguments);
+        if ($this->fromDb) {
+            $this->fromDb = false;
+            return $closure();
+        }
+        $key = $this->key($function, $arguments);
         $tags = $tags ?? $this->tag();
         if ($this->cacheForever) {
             return $this->cache->tags($tags)->rememberForever($key, $closure);

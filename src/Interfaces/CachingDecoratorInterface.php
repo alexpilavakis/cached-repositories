@@ -5,6 +5,11 @@ namespace Ulex\CachedRepositories\Interfaces;
 interface CachingDecoratorInterface
 {
     /**
+     * @return $this
+     */
+    public function fromDb();
+
+    /**
      * @param $id
      * @return mixed
      */
