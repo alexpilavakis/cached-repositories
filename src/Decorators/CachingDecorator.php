@@ -5,6 +5,7 @@ namespace Ulex\CachedRepositories\Decorators;
 use Closure;
 use ReflectionClass;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use ReflectionException;
 use Ulex\CachedRepositories\Interfaces\CachingDecoratorInterface;
 
 abstract class CachingDecorator implements CachingDecoratorInterface
@@ -26,6 +27,9 @@ abstract class CachingDecorator implements CachingDecoratorInterface
 
     const CACHE_TAG_COLLECTION = 'collection';
 
+    /** @var string */
+    protected $className = null;
+
     /**
      * @return $this
      */
@@ -35,13 +39,27 @@ abstract class CachingDecorator implements CachingDecoratorInterface
         return $this;
     }
 
+
+    /**
+     * @param string|null $class
+     * @return string
+     */
+    protected function className(string $class = null)
+    {
+        try {
+            return $this->className ?? strtolower((new ReflectionClass($class ?? $this->model))->getShortName());
+        } catch (ReflectionException $exception) {
+            return strtolower(class_basename($this->model));
+        }
+    }
+
     /**
      * @return int
      */
     protected function ttl(): int
     {
         $ttl = app()->config['cached-repositories.ttl'];
-        return $ttl[strtolower(class_basename($this->model))] ?? $ttl['default'];
+        return $ttl[$this->className()] ?? $ttl['default'];
     }
 
     /**
@@ -51,7 +69,7 @@ abstract class CachingDecorator implements CachingDecoratorInterface
     protected function tag(): array
     {
         return [
-            (new ReflectionClass($this->model))->getShortName()
+            $this->className()
         ];
     }
 
